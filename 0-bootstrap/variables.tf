@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 
+# NIH Overwrite Variables
+variable "seed_project_id_overwrite" {
+  type = string
+  default = null
+}
+
+variable "seed_state_bucket_overwrite" {
+  type = string
+  default = null
+}
+
+variable "bootstrap_folder_overwrite" {
+  type = string
+  default = null
+}
+
+# Bootstrap Repo Variables
+
 variable "org_id" {
   description = "GCP Organization ID"
   type        = string
