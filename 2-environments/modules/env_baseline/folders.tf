@@ -19,7 +19,7 @@
 *****************************************/
 
 resource "google_folder" "env" {
-  display_name = "${local.folder_prefix}-${var.env}"
+  display_name = var.folder_name_overwrite != null ? var.folder_name_overwrite : "${local.folder_prefix}-${var.env}"
   parent       = local.parent
 }
 
@@ -32,7 +32,9 @@ resource "time_sleep" "wait_60_seconds" {
 # The following code binds a tag to a resource.
 # For more details about binding tags to resources see: https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing#attaching
 # For more details on how to use terraform binding resource see: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/tags_tag_binding
+
 resource "google_tags_tag_binding" "folder_env" {
+  count = var.skip_folder_tag_binding ? 0 : 1
   parent    = "//cloudresourcemanager.googleapis.com/${google_folder.env.id}"
   tag_value = local.tags["environment_${var.env}"]
 

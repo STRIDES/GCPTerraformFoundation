@@ -45,103 +45,105 @@ locals {
   private_pools = [local.cloud_build_private_worker_pool_id]
 }
 
-module "organization_policies_type_boolean" {
-  source   = "terraform-google-modules/org-policy/google"
-  version  = "~> 5.1"
-  for_each = local.boolean_type_organization_policies
+# JC Note: Org Policy Currently not managed by terraform
 
-  organization_id = local.organization_id
-  folder_id       = local.folder_id
-  policy_for      = local.policy_for
-  policy_type     = "boolean"
-  enforce         = "true"
-  constraint      = "constraints/${each.value}"
-}
+# module "organization_policies_type_boolean" {
+#   source   = "terraform-google-modules/org-policy/google"
+#   version  = "~> 5.1"
+#   for_each = local.boolean_type_organization_policies
 
-/******************************************
-  Compute org policies
-*******************************************/
+#   organization_id = local.organization_id
+#   folder_id       = local.folder_id
+#   policy_for      = local.policy_for
+#   policy_type     = "boolean"
+#   enforce         = "true"
+#   constraint      = "constraints/${each.value}"
+# }
 
-module "org_vm_external_ip_access" {
-  source  = "terraform-google-modules/org-policy/google"
-  version = "~> 5.1"
+# /******************************************
+#   Compute org policies
+# *******************************************/
 
-  organization_id = local.organization_id
-  folder_id       = local.folder_id
-  policy_for      = local.policy_for
-  policy_type     = "list"
-  enforce         = "true"
-  constraint      = "constraints/compute.vmExternalIpAccess"
-}
+# module "org_vm_external_ip_access" {
+#   source  = "terraform-google-modules/org-policy/google"
+#   version = "~> 5.1"
 
-module "restrict_protocol_fowarding" {
-  source  = "terraform-google-modules/org-policy/google"
-  version = "~> 5.1"
+#   organization_id = local.organization_id
+#   folder_id       = local.folder_id
+#   policy_for      = local.policy_for
+#   policy_type     = "list"
+#   enforce         = "true"
+#   constraint      = "constraints/compute.vmExternalIpAccess"
+# }
 
-  organization_id   = local.organization_id
-  folder_id         = local.folder_id
-  policy_for        = local.policy_for
-  policy_type       = "list"
-  allow             = ["INTERNAL"]
-  allow_list_length = 1
-  constraint        = "constraints/compute.restrictProtocolForwardingCreationForTypes"
-}
+# module "restrict_protocol_fowarding" {
+#   source  = "terraform-google-modules/org-policy/google"
+#   version = "~> 5.1"
 
-/******************************************
-  IAM
-*******************************************/
+#   organization_id   = local.organization_id
+#   folder_id         = local.folder_id
+#   policy_for        = local.policy_for
+#   policy_type       = "list"
+#   allow             = ["INTERNAL"]
+#   allow_list_length = 1
+#   constraint        = "constraints/compute.restrictProtocolForwardingCreationForTypes"
+# }
 
-module "org_domain_restricted_sharing" {
-  source  = "terraform-google-modules/org-policy/google//modules/domain_restricted_sharing"
-  version = "~> 5.1"
+# /******************************************
+#   IAM
+# *******************************************/
 
-  organization_id  = local.organization_id
-  folder_id        = local.folder_id
-  policy_for       = local.policy_for
-  domains_to_allow = var.domains_to_allow
-}
+# module "org_domain_restricted_sharing" {
+#   source  = "terraform-google-modules/org-policy/google//modules/domain_restricted_sharing"
+#   version = "~> 5.1"
 
-/******************************************
-  Essential Contacts
-*******************************************/
+#   organization_id  = local.organization_id
+#   folder_id        = local.folder_id
+#   policy_for       = local.policy_for
+#   domains_to_allow = var.domains_to_allow
+# }
 
-module "domain_restricted_contacts" {
-  source  = "terraform-google-modules/org-policy/google"
-  version = "~> 5.1"
+# /******************************************
+#   Essential Contacts
+# *******************************************/
 
-  organization_id   = local.organization_id
-  folder_id         = local.folder_id
-  policy_for        = local.policy_for
-  policy_type       = "list"
-  allow_list_length = length(local.essential_contacts_domains_to_allow)
-  allow             = local.essential_contacts_domains_to_allow
-  constraint        = "constraints/essentialcontacts.allowedContactDomains"
-}
+# module "domain_restricted_contacts" {
+#   source  = "terraform-google-modules/org-policy/google"
+#   version = "~> 5.1"
 
-/******************************************
-  Cloud build
-*******************************************/
+#   organization_id   = local.organization_id
+#   folder_id         = local.folder_id
+#   policy_for        = local.policy_for
+#   policy_type       = "list"
+#   allow_list_length = length(local.essential_contacts_domains_to_allow)
+#   allow             = local.essential_contacts_domains_to_allow
+#   constraint        = "constraints/essentialcontacts.allowedContactDomains"
+# }
 
-module "allowed_worker_pools" {
-  source  = "terraform-google-modules/org-policy/google"
-  version = "~> 5.1"
-  count   = var.enforce_allowed_worker_pools && local.cloud_build_private_worker_pool_id != "" ? 1 : 0
+# /******************************************
+#   Cloud build
+# *******************************************/
 
-  organization_id   = local.organization_id
-  folder_id         = local.folder_id
-  policy_for        = local.policy_for
-  policy_type       = "list"
-  allow_list_length = length(local.private_pools)
-  allow             = local.private_pools
-  constraint        = "constraints/cloudbuild.allowedWorkerPools"
-}
+# module "allowed_worker_pools" {
+#   source  = "terraform-google-modules/org-policy/google"
+#   version = "~> 5.1"
+#   count   = var.enforce_allowed_worker_pools && local.cloud_build_private_worker_pool_id != "" ? 1 : 0
 
-/******************************************
-  Access Context Manager Policy
-*******************************************/
+#   organization_id   = local.organization_id
+#   folder_id         = local.folder_id
+#   policy_for        = local.policy_for
+#   policy_type       = "list"
+#   allow_list_length = length(local.private_pools)
+#   allow             = local.private_pools
+#   constraint        = "constraints/cloudbuild.allowedWorkerPools"
+# }
 
-resource "google_access_context_manager_access_policy" "access_policy" {
-  count  = var.create_access_context_manager_access_policy ? 1 : 0
-  parent = "organizations/${local.org_id}"
-  title  = "default policy"
-}
+# /******************************************
+#   Access Context Manager Policy
+# *******************************************/
+
+# resource "google_access_context_manager_access_policy" "access_policy" {
+#   count  = var.create_access_context_manager_access_policy ? 1 : 0
+#   parent = "organizations/${local.org_id}"
+#   title  = "default policy"
+# }

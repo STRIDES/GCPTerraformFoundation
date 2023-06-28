@@ -29,20 +29,20 @@ output "base_shared_vpc_project_id" {
   value       = module.base_shared_vpc_host_project.project_id
 }
 
-output "restricted_shared_vpc_project_id" {
-  description = "Project for restricted shared VPC network."
-  value       = module.restricted_shared_vpc_host_project.project_id
-}
+# output "restricted_shared_vpc_project_id" {
+#   description = "Project for restricted shared VPC network."
+#   value       = module.restricted_shared_vpc_host_project.project_id
+# }
 
-output "restricted_shared_vpc_project_number" {
-  description = "Project number for restricted shared VPC."
-  value       = module.restricted_shared_vpc_host_project.project_number
-}
+# output "restricted_shared_vpc_project_number" {
+#   description = "Project number for restricted shared VPC."
+#   value       = module.restricted_shared_vpc_host_project.project_number
+# }
 
-output "env_secrets_project_id" {
-  description = "Project for environment secrets."
-  value       = module.env_secrets.project_id
-}
+# output "env_secrets_project_id" {
+#   description = "Project for environment secrets."
+#   value       = module.env_secrets.project_id
+# }
 
 output "assured_workload_id" {
   description = "Assured Workload ID."

@@ -24,7 +24,7 @@ module "monitoring_project" {
 
   random_project_id           = true
   random_project_id_length    = 4
-  name                        = "${local.project_prefix}-${var.environment_code}-monitoring"
+  name                        = var.monitoring_project_overwrite != null ? var.monitoring_project_overwrite : "${local.project_prefix}-${var.environment_code}-monitoring"
   org_id                      = local.org_id
   billing_account             = local.billing_account
   folder_id                   = google_folder.env.id
@@ -39,10 +39,10 @@ module "monitoring_project" {
   labels = {
     environment       = var.env
     application_name  = "env-monitoring"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
+    # billing_code      = "1234"
+    # primary_contact   = "example1"
+    # secondary_contact = "example2"
+    # business_code     = "abcd"
     env_code          = var.environment_code
   }
   budget_alert_pubsub_topic   = var.project_budget.monitoring_alert_pubsub_topic

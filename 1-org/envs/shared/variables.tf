@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
+# NIH Overwrite Variables
+
+variable "audit_project_overwrite" {
+  type = string
+  default = null
+}
+
+variable "billing_project_overwrite" {
+  type = string
+  default = null
+}
+
+variable "interconnect_project_overwrite" {
+  type = string
+  default = null
+}
+
+# Org Repo Variables
+
 variable "enable_hub_and_spoke" {
   description = "Enable Hub-and-Spoke architecture."
   type        = bool

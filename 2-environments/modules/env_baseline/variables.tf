@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+# NIH Overwrite Variables
+
+variable "folder_name_overwrite" {
+  type = string
+  default = null
+}
+
+variable "skip_folder_tag_binding" {
+  type = bool
+  default = false
+}
+
+variable "monitoring_project_overwrite" {
+  type = string
+  default = null
+}
+
+variable "base_shared_vpc_project_overwrite" {
+  type = string
+  default = null  
+}
+
+# Env Module Variables
+
 variable "env" {
   description = "The environment to prepare (ex. development)"
   type        = string

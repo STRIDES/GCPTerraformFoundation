@@ -24,7 +24,7 @@ module "base_shared_vpc_host_project" {
 
   random_project_id           = true
   random_project_id_length    = 4
-  name                        = format("%s-%s-shared-base", local.project_prefix, var.environment_code)
+  name                        = var.base_shared_vpc_project_overwrite != null ? var.base_shared_vpc_project_overwrite : format("%s-%s-shared-base", local.project_prefix, var.environment_code)
   org_id                      = local.org_id
   billing_account             = local.billing_account
   folder_id                   = google_folder.env.id
@@ -42,10 +42,10 @@ module "base_shared_vpc_host_project" {
   labels = {
     environment       = var.env
     application_name  = "base-shared-vpc-host"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
+    # billing_code      = "1234"
+    # primary_contact   = "example1"
+    # secondary_contact = "example2"
+    # business_code     = "abcd"
     env_code          = var.environment_code
   }
   budget_alert_pubsub_topic   = var.project_budget.base_network_alert_pubsub_topic
@@ -53,39 +53,42 @@ module "base_shared_vpc_host_project" {
   budget_amount               = var.project_budget.base_network_budget_amount
 }
 
-module "restricted_shared_vpc_host_project" {
-  source  = "terraform-google-modules/project-factory/google"
-  version = "~> 14.0"
 
-  random_project_id           = true
-  random_project_id_length    = 4
-  name                        = format("%s-%s-shared-restricted", local.project_prefix, var.environment_code)
-  org_id                      = local.org_id
-  billing_account             = local.billing_account
-  folder_id                   = google_folder.env.id
-  disable_services_on_destroy = false
-  depends_on                  = [time_sleep.wait_60_seconds]
-  activate_apis = [
-    "compute.googleapis.com",
-    "dns.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "container.googleapis.com",
-    "logging.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "accesscontextmanager.googleapis.com",
-    "billingbudgets.googleapis.com"
-  ]
+# JC Note: We are not currently doing a base vs. restricted VPC.
 
-  labels = {
-    environment       = var.env
-    application_name  = "restricted-shared-vpc-host"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
-    env_code          = var.environment_code
-  }
-  budget_alert_pubsub_topic   = var.project_budget.restricted_network_alert_pubsub_topic
-  budget_alert_spent_percents = var.project_budget.restricted_network_alert_spent_percents
-  budget_amount               = var.project_budget.restricted_network_budget_amount
-}
+# module "restricted_shared_vpc_host_project" {
+#   source  = "terraform-google-modules/project-factory/google"
+#   version = "~> 14.0"
+
+#   random_project_id           = true
+#   random_project_id_length    = 4
+#   name                        = format("%s-%s-shared-restricted", local.project_prefix, var.environment_code)
+#   org_id                      = local.org_id
+#   billing_account             = local.billing_account
+#   folder_id                   = google_folder.env.id
+#   disable_services_on_destroy = false
+#   depends_on                  = [time_sleep.wait_60_seconds]
+#   activate_apis = [
+#     "compute.googleapis.com",
+#     "dns.googleapis.com",
+#     "servicenetworking.googleapis.com",
+#     "container.googleapis.com",
+#     "logging.googleapis.com",
+#     "cloudresourcemanager.googleapis.com",
+#     "accesscontextmanager.googleapis.com",
+#     "billingbudgets.googleapis.com"
+#   ]
+
+#   labels = {
+#     environment       = var.env
+#     application_name  = "restricted-shared-vpc-host"
+#     # billing_code      = "1234"
+#     # primary_contact   = "example1"
+#     # secondary_contact = "example2"
+#     # business_code     = "abcd"
+#     env_code          = var.environment_code
+#   }
+#   budget_alert_pubsub_topic   = var.project_budget.restricted_network_alert_pubsub_topic
+#   budget_alert_spent_percents = var.project_budget.restricted_network_alert_spent_percents
+#   budget_amount               = var.project_budget.restricted_network_budget_amount
+# }

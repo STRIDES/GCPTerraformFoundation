@@ -18,7 +18,8 @@
   Top level folders
  *****************************************/
 
-resource "google_folder" "common" {
-  display_name = "${local.folder_prefix}-common"
-  parent       = local.parent
-}
+# JC Note: Common Folder is the same as Bootstrap Folder
+# resource "google_folder" "folder_common" {
+#   display_name = "${local.folder_prefix}-common"
+#   parent = local.parent
+# }

@@ -19,31 +19,33 @@
   Project for Environment Secrets
 *****************************************/
 
-module "env_secrets" {
-  source  = "terraform-google-modules/project-factory/google"
-  version = "~> 14.0"
+# JC Note: We are not currently using a separate project for environment secrets.
 
-  random_project_id           = true
-  random_project_id_length    = 4
-  default_service_account     = "deprivilege"
-  name                        = "${local.project_prefix}-${var.environment_code}-secrets"
-  org_id                      = local.org_id
-  billing_account             = local.billing_account
-  folder_id                   = google_folder.env.id
-  disable_services_on_destroy = false
-  depends_on                  = [time_sleep.wait_60_seconds]
-  activate_apis               = ["logging.googleapis.com", "secretmanager.googleapis.com"]
+# module "env_secrets" {
+#   source  = "terraform-google-modules/project-factory/google"
+#   version = "~> 14.0"
 
-  labels = {
-    environment       = var.env
-    application_name  = "env-secrets"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
-    env_code          = var.environment_code
-  }
-  budget_alert_pubsub_topic   = var.project_budget.secret_alert_pubsub_topic
-  budget_alert_spent_percents = var.project_budget.secret_alert_spent_percents
-  budget_amount               = var.project_budget.secret_budget_amount
-}
+#   random_project_id           = true
+#   random_project_id_length    = 4
+#   default_service_account     = "deprivilege"
+#   name                        = "${local.project_prefix}-${var.environment_code}-secrets"
+#   org_id                      = local.org_id
+#   billing_account             = local.billing_account
+#   folder_id                   = google_folder.env.id
+#   disable_services_on_destroy = false
+#   depends_on                  = [time_sleep.wait_60_seconds]
+#   activate_apis               = ["logging.googleapis.com", "secretmanager.googleapis.com"]
+
+#   labels = {
+#     environment       = var.env
+#     application_name  = "env-secrets"
+#     billing_code      = "1234"
+#     primary_contact   = "example1"
+#     secondary_contact = "example2"
+#     business_code     = "abcd"
+#     env_code          = var.environment_code
+#   }
+#   budget_alert_pubsub_topic   = var.project_budget.secret_alert_pubsub_topic
+#   budget_alert_spent_percents = var.project_budget.secret_alert_spent_percents
+#   budget_amount               = var.project_budget.secret_budget_amount
+# }

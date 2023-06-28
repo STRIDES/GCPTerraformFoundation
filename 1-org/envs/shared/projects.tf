@@ -34,10 +34,10 @@ module "org_audit_logs" {
   random_project_id        = true
   random_project_id_length = 4
   default_service_account  = "deprivilege"
-  name                     = "${local.project_prefix}-c-logging"
+  name                     = var.audit_project_overwrite != null ? var.audit_project_overwrite : "${local.project_prefix}-c-logging"
   org_id                   = local.org_id
   billing_account          = local.billing_account
-  folder_id                = google_folder.common.id
+  folder_id                = local.parent # google_folder.common.id
   activate_apis            = ["logging.googleapis.com", "bigquery.googleapis.com", "billingbudgets.googleapis.com"]
 
   labels = {
@@ -49,9 +49,10 @@ module "org_audit_logs" {
     business_code     = "abcd"
     env_code          = "p"
   }
+  # JC Note: Unknown budget issue / bug. Not setting budget for now.
   budget_alert_pubsub_topic   = var.project_budget.org_audit_logs_alert_pubsub_topic
   budget_alert_spent_percents = var.project_budget.org_audit_logs_alert_spent_percents
-  budget_amount               = var.project_budget.org_audit_logs_budget_amount
+  budget_amount               = null # var.project_budget.org_audit_logs_budget_amount
 }
 
 module "org_billing_logs" {
@@ -61,10 +62,10 @@ module "org_billing_logs" {
   random_project_id        = true
   random_project_id_length = 4
   default_service_account  = "deprivilege"
-  name                     = "${local.project_prefix}-c-billing-logs"
+  name                     = var.billing_project_overwrite != null ? var.billing_project_overwrite : "${local.project_prefix}-c-billing-logs"
   org_id                   = local.org_id
   billing_account          = local.billing_account
-  folder_id                = google_folder.common.id
+  folder_id                = google_folder.folder_prod.id
   activate_apis            = ["logging.googleapis.com", "bigquery.googleapis.com", "billingbudgets.googleapis.com"]
 
   labels = {
@@ -76,41 +77,42 @@ module "org_billing_logs" {
     business_code     = "abcd"
     env_code          = "p"
   }
+  # JC Note: Unknown budget issue / bug. Not setting budget for now.
   budget_alert_pubsub_topic   = var.project_budget.org_billing_logs_alert_pubsub_topic
   budget_alert_spent_percents = var.project_budget.org_billing_logs_alert_spent_percents
-  budget_amount               = var.project_budget.org_billing_logs_budget_amount
+  budget_amount               = null # var.project_budget.org_billing_logs_budget_amount
 }
 
-/******************************************
-  Project for Org-wide Secrets
-*****************************************/
+# /******************************************
+#   Project for Org-wide Secrets
+# *****************************************/
 
-module "org_secrets" {
-  source  = "terraform-google-modules/project-factory/google"
-  version = "~> 14.0"
+# module "org_secrets" {
+#   source  = "terraform-google-modules/project-factory/google"
+#   version = "~> 14.0"
 
-  random_project_id        = true
-  random_project_id_length = 4
-  default_service_account  = "deprivilege"
-  name                     = "${local.project_prefix}-c-secrets"
-  org_id                   = local.org_id
-  billing_account          = local.billing_account
-  folder_id                = google_folder.common.id
-  activate_apis            = ["logging.googleapis.com", "secretmanager.googleapis.com", "billingbudgets.googleapis.com"]
+#   random_project_id        = true
+#   random_project_id_length = 4
+#   default_service_account  = "deprivilege"
+#   name                     = "${local.project_prefix}-c-secrets"
+#   org_id                   = local.org_id
+#   billing_account          = local.billing_account
+#   folder_id                = google_folder.folder_prod.id
+#   activate_apis            = ["logging.googleapis.com", "secretmanager.googleapis.com", "billingbudgets.googleapis.com"]
 
-  labels = {
-    environment       = "production"
-    application_name  = "org-secrets"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
-    env_code          = "p"
-  }
-  budget_alert_pubsub_topic   = var.project_budget.org_secrets_alert_pubsub_topic
-  budget_alert_spent_percents = var.project_budget.org_secrets_alert_spent_percents
-  budget_amount               = var.project_budget.org_secrets_budget_amount
-}
+#   labels = {
+#     environment       = "production"
+#     application_name  = "org-secrets"
+#     billing_code      = "1234"
+#     primary_contact   = "example1"
+#     secondary_contact = "example2"
+#     business_code     = "abcd"
+#     env_code          = "p"
+#   }
+#   budget_alert_pubsub_topic   = var.project_budget.org_secrets_alert_pubsub_topic
+#   budget_alert_spent_percents = var.project_budget.org_secrets_alert_spent_percents
+#   budget_amount               = var.project_budget.org_secrets_budget_amount
+# }
 
 /******************************************
   Project for Interconnect
@@ -123,10 +125,10 @@ module "interconnect" {
   random_project_id        = true
   random_project_id_length = 4
   default_service_account  = "deprivilege"
-  name                     = "${local.project_prefix}-c-interconnect"
+  name                     = var.interconnect_project_overwrite != null ? var.interconnect_project_overwrite : "${local.project_prefix}-c-interconnect"
   org_id                   = local.org_id
   billing_account          = local.billing_account
-  folder_id                = google_folder.common.id
+  folder_id                = local.parent # google_folder.folder_prod.id
   activate_apis            = ["billingbudgets.googleapis.com", "compute.googleapis.com"]
 
   labels = {
@@ -138,9 +140,10 @@ module "interconnect" {
     business_code     = "abcd"
     env_code          = "p"
   }
-  budget_alert_pubsub_topic   = var.project_budget.interconnect_alert_pubsub_topic
-  budget_alert_spent_percents = var.project_budget.interconnect_alert_spent_percents
-  budget_amount               = var.project_budget.interconnect_budget_amount
+  # JC Note: Unknown budget issue / bug. Not setting budget for now.
+  budget_alert_pubsub_topic   = var.project_budget.org_billing_logs_alert_pubsub_topic
+  budget_alert_spent_percents = var.project_budget.org_billing_logs_alert_spent_percents
+  budget_amount               = null # var.project_budget.org_billing_logs_budget_amount
 }
 
 /******************************************
@@ -157,7 +160,7 @@ module "scc_notifications" {
   name                     = "${local.project_prefix}-c-scc"
   org_id                   = local.org_id
   billing_account          = local.billing_account
-  folder_id                = google_folder.common.id
+  folder_id                = google_folder.folder_prod.id
   activate_apis            = ["logging.googleapis.com", "pubsub.googleapis.com", "securitycenter.googleapis.com", "billingbudgets.googleapis.com"]
 
   labels = {
@@ -169,142 +172,246 @@ module "scc_notifications" {
     business_code     = "abcd"
     env_code          = "p"
   }
-  budget_alert_pubsub_topic   = var.project_budget.scc_notifications_alert_pubsub_topic
-  budget_alert_spent_percents = var.project_budget.scc_notifications_alert_spent_percents
-  budget_amount               = var.project_budget.scc_notifications_budget_amount
+  # JC Note: Unknown budget issue / bug. Not setting budget for now.
+  budget_alert_pubsub_topic   = var.project_budget.org_billing_logs_alert_pubsub_topic
+  budget_alert_spent_percents = var.project_budget.org_billing_logs_alert_spent_percents
+  budget_amount               = null # var.project_budget.org_billing_logs_budget_amount
 }
 
-/******************************************
-  Project for DNS Hub
-*****************************************/
+# /******************************************
+#   Project for DNS Hub
+# *****************************************/
 
-module "dns_hub" {
-  source  = "terraform-google-modules/project-factory/google"
-  version = "~> 14.0"
+# module "dns_hub" {
+#   source  = "terraform-google-modules/project-factory/google"
+#   version = "~> 14.0"
 
-  random_project_id        = true
-  random_project_id_length = 4
-  default_service_account  = "deprivilege"
-  name                     = "${local.project_prefix}-c-dns-hub"
-  org_id                   = local.org_id
-  billing_account          = local.billing_account
-  folder_id                = google_folder.common.id
+#   random_project_id        = true
+#   random_project_id_length = 4
+#   default_service_account  = "deprivilege"
+#   name                     = "${local.project_prefix}-c-dns-hub"
+#   org_id                   = local.org_id
+#   billing_account          = local.billing_account
+#   folder_id                = google_folder.folder_prod.id
 
-  activate_apis = [
-    "compute.googleapis.com",
-    "dns.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "logging.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "billingbudgets.googleapis.com"
-  ]
+#   activate_apis = [
+#     "compute.googleapis.com",
+#     "dns.googleapis.com",
+#     "servicenetworking.googleapis.com",
+#     "logging.googleapis.com",
+#     "cloudresourcemanager.googleapis.com",
+#     "billingbudgets.googleapis.com"
+#   ]
 
-  labels = {
-    environment       = "production"
-    application_name  = "org-dns-hub"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
-    env_code          = "p"
-  }
-  budget_alert_pubsub_topic   = var.project_budget.dns_hub_alert_pubsub_topic
-  budget_alert_spent_percents = var.project_budget.dns_hub_alert_spent_percents
-  budget_amount               = var.project_budget.dns_hub_budget_amount
-}
+#   labels = {
+#     environment       = "production"
+#     application_name  = "org-dns-hub"
+#     billing_code      = "1234"
+#     primary_contact   = "example1"
+#     secondary_contact = "example2"
+#     business_code     = "abcd"
+#     env_code          = "p"
+#   }
+#   budget_alert_pubsub_topic   = var.project_budget.dns_hub_alert_pubsub_topic
+#   budget_alert_spent_percents = var.project_budget.dns_hub_alert_spent_percents
+#   budget_amount               = var.project_budget.dns_hub_budget_amount
+# }
 
-/******************************************
-  Project for Base Network Hub
-*****************************************/
+# /******************************************
+#   Project for Base Network Hub
+# *****************************************/
 
-module "base_network_hub" {
-  source  = "terraform-google-modules/project-factory/google"
-  version = "~> 14.0"
-  count   = var.enable_hub_and_spoke ? 1 : 0
+# module "base_network_hub" {
+#   source  = "terraform-google-modules/project-factory/google"
+#   version = "~> 14.0"
+#   count   = var.enable_hub_and_spoke ? 1 : 0
 
-  random_project_id        = true
-  random_project_id_length = 4
-  default_service_account  = "deprivilege"
-  name                     = "${local.project_prefix}-c-base-net-hub"
-  org_id                   = local.org_id
-  billing_account          = local.billing_account
-  folder_id                = google_folder.common.id
+#   random_project_id        = true
+#   random_project_id_length = 4
+#   default_service_account  = "deprivilege"
+#   name                     = "${local.project_prefix}-c-base-net-hub"
+#   org_id                   = local.org_id
+#   billing_account          = local.billing_account
+#   folder_id                = google_folder.folder_prod.id
 
-  activate_apis = [
-    "compute.googleapis.com",
-    "dns.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "logging.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "billingbudgets.googleapis.com"
-  ]
+#   activate_apis = [
+#     "compute.googleapis.com",
+#     "dns.googleapis.com",
+#     "servicenetworking.googleapis.com",
+#     "logging.googleapis.com",
+#     "cloudresourcemanager.googleapis.com",
+#     "billingbudgets.googleapis.com"
+#   ]
 
-  labels = {
-    environment       = "production"
-    application_name  = "org-base-net-hub"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
-    env_code          = "p"
-  }
-  budget_alert_pubsub_topic   = var.project_budget.base_net_hub_alert_pubsub_topic
-  budget_alert_spent_percents = var.project_budget.base_net_hub_alert_spent_percents
-  budget_amount               = var.project_budget.base_net_hub_budget_amount
-}
+#   labels = {
+#     environment       = "production"
+#     application_name  = "org-base-net-hub"
+#     billing_code      = "1234"
+#     primary_contact   = "example1"
+#     secondary_contact = "example2"
+#     business_code     = "abcd"
+#     env_code          = "p"
+#   }
+#   budget_alert_pubsub_topic   = var.project_budget.base_net_hub_alert_pubsub_topic
+#   budget_alert_spent_percents = var.project_budget.base_net_hub_alert_spent_percents
+#   budget_amount               = var.project_budget.base_net_hub_budget_amount
+# }
 
-resource "google_project_iam_member" "network_sa_base" {
-  for_each = toset(var.enable_hub_and_spoke ? local.hub_and_spoke_roles : [])
+# resource "google_project_iam_member" "network_sa_base" {
+#   for_each = toset(var.enable_hub_and_spoke ? local.hub_and_spoke_roles : [])
 
-  project = module.base_network_hub[0].project_id
-  role    = each.key
-  member  = "serviceAccount:${local.networks_step_terraform_service_account_email}"
-}
+#   project = module.base_network_hub[0].project_id
+#   role    = each.key
+#   member  = "serviceAccount:${local.networks_step_terraform_service_account_email}"
+# }
 
-/******************************************
-  Project for Restricted Network Hub
-*****************************************/
+# /******************************************
+#   Project for Restricted Network Hub
+# *****************************************/
 
-module "restricted_network_hub" {
-  source  = "terraform-google-modules/project-factory/google"
-  version = "~> 14.0"
-  count   = var.enable_hub_and_spoke ? 1 : 0
+# module "restricted_network_hub" {
+#   source  = "terraform-google-modules/project-factory/google"
+#   version = "~> 14.0"
+#   count   = var.enable_hub_and_spoke ? 1 : 0
 
-  random_project_id        = true
-  random_project_id_length = 4
-  default_service_account  = "deprivilege"
-  name                     = "${local.project_prefix}-c-restricted-net-hub"
-  org_id                   = local.org_id
-  billing_account          = local.billing_account
-  folder_id                = google_folder.common.id
+#   random_project_id        = true
+#   random_project_id_length = 4
+#   default_service_account  = "deprivilege"
+#   name                     = "${local.project_prefix}-c-restricted-net-hub"
+#   org_id                   = local.org_id
+#   billing_account          = local.billing_account
+#   folder_id                = google_folder.folder_prod.id
 
-  activate_apis = [
-    "compute.googleapis.com",
-    "dns.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "logging.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "billingbudgets.googleapis.com"
-  ]
+#   activate_apis = [
+#     "compute.googleapis.com",
+#     "dns.googleapis.com",
+#     "servicenetworking.googleapis.com",
+#     "logging.googleapis.com",
+#     "cloudresourcemanager.googleapis.com",
+#     "billingbudgets.googleapis.com"
+#   ]
 
-  labels = {
-    environment       = "production"
-    application_name  = "org-restricted-net-hub"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
-    env_code          = "p"
-  }
-  budget_alert_pubsub_topic   = var.project_budget.restricted_net_hub_alert_pubsub_topic
-  budget_alert_spent_percents = var.project_budget.restricted_net_hub_alert_spent_percents
-  budget_amount               = var.project_budget.restricted_net_hub_budget_amount
-}
+#   labels = {
+#     environment       = "production"
+#     application_name  = "org-restricted-net-hub"
+#     billing_code      = "1234"
+#     primary_contact   = "example1"
+#     secondary_contact = "example2"
+#     business_code     = "abcd"
+#     env_code          = "p"
+#   }
+#   budget_alert_pubsub_topic   = var.project_budget.restricted_net_hub_alert_pubsub_topic
+#   budget_alert_spent_percents = var.project_budget.restricted_net_hub_alert_spent_percents
+#   budget_amount               = var.project_budget.restricted_net_hub_budget_amount
+# }
 
-resource "google_project_iam_member" "network_sa_restricted" {
-  for_each = toset(var.enable_hub_and_spoke ? local.hub_and_spoke_roles : [])
+# resource "google_project_iam_member" "network_sa_restricted" {
+#   for_each = toset(var.enable_hub_and_spoke ? local.hub_and_spoke_roles : [])
 
-  project = module.restricted_network_hub[0].project_id
-  role    = each.key
-  member  = "serviceAccount:${local.networks_step_terraform_service_account_email}"
-}
+#   project = module.restricted_network_hub[0].project_id
+#   role    = each.key
+#   member  = "serviceAccount:${local.networks_step_terraform_service_account_email}"
+# }
+
+
+# # JC Note: Adding in Forseti and ops-monitoring projects from current state.
+
+# /******************************************
+#   Projects for Forseti
+# *****************************************/
+
+# module "nih_ops_forseti" {
+#   source                      = "terraform-google-modules/project-factory/google"
+#   version                     = "~> 14.0"
+#   random_project_id           = "true"
+#   impersonate_service_account = var.terraform_service_account
+#   default_service_account     = "deprivilege"
+#   name                        = "nih-ops-forseti"
+#   org_id                      = var.org_id
+#   billing_account             = var.billing_account
+#   folder_id                   = google_folder.folder_prod.id
+#   #skip_gcloud_download        = var.skip_gcloud_download
+#   activate_apis               = [
+#     "admin.googleapis.com",
+#     "appengine.googleapis.com",
+#     "bigquery.googleapis.com",
+#     "cloudbilling.googleapis.com",
+#     "cloudresourcemanager.googleapis.com",
+#     "sql-component.googleapis.com",
+#     "sqladmin.googleapis.com",
+#     "compute.googleapis.com",
+#     "iam.googleapis.com",
+#     "container.googleapis.com",
+#     "servicemanagement.googleapis.com",
+#     "serviceusage.googleapis.com",
+#     "logging.googleapis.com",
+#     "cloudasset.googleapis.com",
+#     "storage-api.googleapis.com",
+#     "groupssettings.googleapis.com",
+#     "oslogin.googleapis.com",
+#     "dns.googleapis.com",
+#     "servicenetworking.googleapis.com",
+#   ]
+#   }
+  
+# /******************************************
+#   Projects for monitoring workspaces
+# *****************************************/
+
+# module "org_monitoring_prod" {
+#   source                      = "terraform-google-modules/project-factory/google"
+#   version                     = "~> 14.0"
+#   random_project_id           = "true"
+#   impersonate_service_account = var.terraform_service_account
+#   name                        = "nih-ops-monitoring-prod"
+#   org_id                      = var.org_id
+#   billing_account             = var.billing_account
+#   folder_id                   = google_folder.folder_prod.id
+#   activate_apis               = ["logging.googleapis.com", "monitoring.googleapis.com"]
+ 
+#   #skip_gcloud_download = var.skip_gcloud_download
+ 
+#   labels = {
+#     environment      = "prod"
+#     application_name = "nih-ops-monitoring"
+#   }
+# }
+
+# module "org_monitoring_dev" {
+#   source                      = "terraform-google-modules/project-factory/google"
+#   version                     = "~>14.0"
+#   random_project_id           = "true"
+#   impersonate_service_account = var.terraform_service_account
+#   name                        = "nih-ops-monitoring-dev"
+#   org_id                      = var.org_id
+#   billing_account             = var.billing_account
+#   folder_id                   = google_folder.folder_dev.id
+#   activate_apis               = ["logging.googleapis.com", "monitoring.googleapis.com"]
+ 
+#   #skip_gcloud_download = var.skip_gcloud_download
+ 
+#   labels = {
+#     environment      = "dev"
+#     application_name = "nih-ops-monitoring"
+#   }
+# } 
+
+# /******************************************
+#   Project for Custom Governance (dev)
+# *****************************************/
+
+# module "nih_ops_cgov_dev" {
+#   source                      = "terraform-google-modules/project-factory/google"
+#   version                     = "~> 14.0"
+#   random_project_id           = "true"
+#   impersonate_service_account = var.terraform_service_account
+#   default_service_account     = "deprivilege"
+#   name                        = "nih-ops-cgov-dev"
+#   org_id                      = var.org_id
+#   billing_account             = var.billing_account
+#   folder_id                   = google_folder.folder_dev.id
+#   #skip_gcloud_download        = var.skip_gcloud_download
+#   activate_apis               = [
+#     "cloudresourcemanager.googleapis.com"
+#   ]
+# }

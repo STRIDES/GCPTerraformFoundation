@@ -72,7 +72,7 @@ resource "google_tags_tag_value" "tag_values" {
 # For more details about binding tags to resources see: https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing#attaching
 # For more details about how to use terraform binding resource see: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/tags_tag_binding
 resource "google_tags_tag_binding" "common_folder" {
-  parent    = "//cloudresourcemanager.googleapis.com/${google_folder.common.id}"
+  parent    = "//cloudresourcemanager.googleapis.com/${google_folder.folder_prod.id}"
   tag_value = google_tags_tag_value.tag_values["environment_production"].id
 }
 

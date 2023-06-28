@@ -21,12 +21,13 @@ locals {
   // The bootstrap module will enforce that only identities
   // in the list "org_project_creators" will have the Project Creator role,
   // so the granular service accounts for each step need to be added to the list.
+  # JC Note: limiting to existing service accounts for now.
   step_terraform_sa = [
     "serviceAccount:${google_service_account.terraform-env-sa["bootstrap"].email}",
     "serviceAccount:${google_service_account.terraform-env-sa["org"].email}",
-    "serviceAccount:${google_service_account.terraform-env-sa["env"].email}",
-    "serviceAccount:${google_service_account.terraform-env-sa["net"].email}",
-    "serviceAccount:${google_service_account.terraform-env-sa["proj"].email}",
+    # "serviceAccount:${google_service_account.terraform-env-sa["env"].email}",
+    # "serviceAccount:${google_service_account.terraform-env-sa["net"].email}",
+    # "serviceAccount:${google_service_account.terraform-env-sa["proj"].email}",
   ]
   org_project_creators = distinct(concat(var.org_project_creators, local.step_terraform_sa))
   parent               = var.parent_folder != "" ? "folders/${var.parent_folder}" : "organizations/${var.org_id}"
@@ -62,15 +63,16 @@ module "seed_bootstrap" {
   org_admins_org_iam_permissions = local.org_admins_org_iam_permissions
   project_prefix                 = var.project_prefix
 
-  project_labels = {
-    environment       = "bootstrap"
-    application_name  = "seed-bootstrap"
-    billing_code      = "1234"
-    primary_contact   = "example1"
-    secondary_contact = "example2"
-    business_code     = "abcd"
-    env_code          = "b"
-  }
+  # JC Note: Ignoring Project Labels
+  # project_labels = {
+  #   environment       = "bootstrap"
+  #   application_name  = "seed-bootstrap"
+  #   billing_code      = "1234"
+  #   primary_contact   = "example1"
+  #   secondary_contact = "example2"
+  #   business_code     = "abcd"
+  #   env_code          = "b"
+  # }
 
   activate_apis = [
     "serviceusage.googleapis.com",

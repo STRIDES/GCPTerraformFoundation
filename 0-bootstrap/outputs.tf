@@ -19,25 +19,27 @@ output "seed_project_id" {
   value       = module.seed_bootstrap.seed_project_id
 }
 
+# JC Note: Limiting to existing service accounts.
+
 output "bootstrap_step_terraform_service_account_email" {
   description = "Bootstrap Step Terraform Account"
   value       = google_service_account.terraform-env-sa["bootstrap"].email
 }
 
-output "projects_step_terraform_service_account_email" {
-  description = "Projects Step Terraform Account"
-  value       = google_service_account.terraform-env-sa["proj"].email
-}
+# output "projects_step_terraform_service_account_email" {
+#   description = "Projects Step Terraform Account"
+#   value       = google_service_account.terraform-env-sa["proj"].email
+# }
 
-output "networks_step_terraform_service_account_email" {
-  description = "Networks Step Terraform Account"
-  value       = google_service_account.terraform-env-sa["net"].email
-}
+# output "networks_step_terraform_service_account_email" {
+#   description = "Networks Step Terraform Account"
+#   value       = google_service_account.terraform-env-sa["net"].email
+# }
 
-output "environment_step_terraform_service_account_email" {
-  description = "Environment Step Terraform Account"
-  value       = google_service_account.terraform-env-sa["env"].email
-}
+# output "environment_step_terraform_service_account_email" {
+#   description = "Environment Step Terraform Account"
+#   value       = google_service_account.terraform-env-sa["env"].email
+# }
 
 output "organization_step_terraform_service_account_email" {
   description = "Organization Step Terraform Account"

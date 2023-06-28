@@ -19,12 +19,13 @@ locals {
   parent_type = var.parent_folder == "" ? "organization" : "folder"
   parent_id   = var.parent_folder == "" ? var.org_id : var.parent_folder
 
+  # JC Note: Limiting to the existing service accounts.
   granular_sa = {
-    "bootstrap" = "Foundation Bootstrap SA. Managed by Terraform.",
-    "org"       = "Foundation Organization SA. Managed by Terraform.",
-    "env"       = "Foundation Environment SA. Managed by Terraform.",
-    "net"       = "Foundation Network SA. Managed by Terraform.",
-    "proj"      = "Foundation Projects SA. Managed by Terraform.",
+    "bootstrap" = "nih-ops-terraform Project Service Account",
+    "org"       = "NIH Organization Terraform Account",
+    # "env"       = "Foundation Environment SA. Managed by Terraform.",
+    # "net"       = "Foundation Network SA. Managed by Terraform.",
+    # "proj"      = "Foundation Projects SA. Managed by Terraform.",
   }
 
   common_roles = [
@@ -48,19 +49,19 @@ locals {
       "roles/resourcemanager.tagAdmin",
       "roles/resourcemanager.tagUser",
     ], local.common_roles)),
-    "env" = distinct(concat([
-      "roles/resourcemanager.tagUser",
-      "roles/assuredworkloads.admin",
-    ], local.common_roles)),
-    "net" = distinct(concat([
-      "roles/accesscontextmanager.policyAdmin",
-      "roles/compute.xpnAdmin",
-    ], local.common_roles)),
-    "proj" = distinct(concat([
-      "roles/accesscontextmanager.policyAdmin",
-      "roles/resourcemanager.organizationAdmin",
-      "roles/serviceusage.serviceUsageConsumer",
-    ], local.common_roles)),
+    # "env" = distinct(concat([
+    #   "roles/resourcemanager.tagUser",
+    #   "roles/assuredworkloads.admin",
+    # ], local.common_roles)),
+    # "net" = distinct(concat([
+    #   "roles/accesscontextmanager.policyAdmin",
+    #   "roles/compute.xpnAdmin",
+    # ], local.common_roles)),
+    # "proj" = distinct(concat([
+    #   "roles/accesscontextmanager.policyAdmin",
+    #   "roles/resourcemanager.organizationAdmin",
+    #   "roles/serviceusage.serviceUsageConsumer",
+    # ], local.common_roles)),
   }
 
   granular_sa_parent_level_roles = {
@@ -70,24 +71,24 @@ locals {
     "org" = [
       "roles/resourcemanager.folderAdmin",
     ],
-    "env" = [
-      "roles/resourcemanager.folderAdmin"
-    ],
-    "net" = [
-      "roles/resourcemanager.folderViewer",
-      "roles/compute.networkAdmin",
-      "roles/compute.securityAdmin",
-      "roles/compute.orgSecurityPolicyAdmin",
-      "roles/compute.orgSecurityResourceAdmin",
-      "roles/dns.admin",
-    ],
-    "proj" = [
-      "roles/resourcemanager.folderViewer",
-      "roles/resourcemanager.folderIamAdmin",
-      "roles/artifactregistry.admin",
-      "roles/compute.networkAdmin",
-      "roles/compute.xpnAdmin",
-    ],
+    # "env" = [
+    #   "roles/resourcemanager.folderAdmin"
+    # ],
+    # "net" = [
+    #   "roles/resourcemanager.folderViewer",
+    #   "roles/compute.networkAdmin",
+    #   "roles/compute.securityAdmin",
+    #   "roles/compute.orgSecurityPolicyAdmin",
+    #   "roles/compute.orgSecurityResourceAdmin",
+    #   "roles/dns.admin",
+    # ],
+    # "proj" = [
+    #   "roles/resourcemanager.folderViewer",
+    #   "roles/resourcemanager.folderIamAdmin",
+    #   "roles/artifactregistry.admin",
+    #   "roles/compute.networkAdmin",
+    #   "roles/compute.xpnAdmin",
+    # ],
   }
 
   // Roles required to manage resources in the Seed project
@@ -100,15 +101,15 @@ locals {
     "org" = [
       "roles/storage.objectAdmin",
     ],
-    "env" = [
-      "roles/storage.objectAdmin"
-    ],
-    "net" = [
-      "roles/storage.objectAdmin",
-    ],
-    "proj" = [
-      "roles/storage.objectAdmin",
-    ],
+    # "env" = [
+    #   "roles/storage.objectAdmin"
+    # ],
+    # "net" = [
+    #   "roles/storage.objectAdmin",
+    # ],
+    # "proj" = [
+    #   "roles/storage.objectAdmin",
+    # ],
   }
 
   // Roles required to manage resources in the CI/CD project
@@ -134,11 +135,12 @@ locals {
   }
 }
 
+# JC Note: Using the old default service account as the bootstrap service account.
 resource "google_service_account" "terraform-env-sa" {
   for_each = local.granular_sa
 
   project      = module.seed_bootstrap.seed_project_id
-  account_id   = "sa-terraform-${each.key}"
+  account_id   = each.key != "bootstrap" ? "${each.key}-terraform" : "project-service-account"
   display_name = each.value
 }
 
