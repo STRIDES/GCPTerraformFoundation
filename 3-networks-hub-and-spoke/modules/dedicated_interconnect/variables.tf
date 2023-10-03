@@ -32,6 +32,7 @@ variable "region1" {
 variable "region2" {
   type        = string
   description = "Second subnet region. The Dedicated Interconnect module only configures two regions."
+  default = null
 }
 
 variable "peer_name" {
@@ -57,11 +58,13 @@ variable "region1_interconnect2_onprem_dc" {
 variable "region2_interconnect1_onprem_dc" {
   type        = string
   description = "Name of the on premisses data center used in the creation of the Interconnect for the first location of region2."
+  default = null
 }
 
 variable "region2_interconnect2_onprem_dc" {
   type        = string
   description = "Name of the on premisses data center used in the creation of the Interconnect for the second location of region2."
+  default = null
 }
 
 variable "region1_interconnect1_location" {
@@ -77,11 +80,13 @@ variable "region1_interconnect2_location" {
 variable "region2_interconnect1_location" {
   type        = string
   description = "Name of the interconnect location used in the creation of the Interconnect for the first location of region2"
+  default = null
 }
 
 variable "region2_interconnect2_location" {
   type        = string
   description = "Name of the interconnect location used in the creation of the Interconnect for the second location of region2"
+  default = null
 }
 
 variable "region1_interconnect1" {
@@ -97,11 +102,13 @@ variable "region1_interconnect2" {
 variable "region2_interconnect1" {
   type        = string
   description = "URL of the underlying Interconnect object that this attachment's traffic will traverse through."
+  default = null
 }
 
 variable "region2_interconnect2" {
   type        = string
   description = "URL of the underlying Interconnect object that this attachment's traffic will traverse through."
+  default = null
 }
 
 variable "region1_router1_name" {
@@ -117,11 +124,13 @@ variable "region1_router2_name" {
 variable "region2_router1_name" {
   type        = string
   description = "Name of the Router 1 for Region 2 where the attachment resides."
+  default = null
 }
 
 variable "region2_router2_name" {
   type        = string
   description = "Name of the Router 2 for Region 2 where the attachment resides"
+  default = null
 }
 
 variable "cloud_router_labels" {

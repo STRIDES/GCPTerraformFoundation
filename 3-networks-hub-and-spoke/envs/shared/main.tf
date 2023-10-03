@@ -15,33 +15,37 @@
  */
 
 locals {
-  env                               = "common"
-  environment_code                  = "c"
-  bgp_asn_number                    = var.enable_partner_interconnect ? "16550" : "64514"
-  dns_bgp_asn_number                = var.enable_partner_interconnect ? "16550" : var.bgp_asn_dns
-  default_region1                   = "us-west1"
-  default_region2                   = "us-central1"
-  dns_hub_project_id                = data.terraform_remote_state.org.outputs.dns_hub_project_id
-  interconnect_project_id           = data.terraform_remote_state.org.outputs.interconnect_project_id
-  interconnect_project_number       = data.terraform_remote_state.org.outputs.interconnect_project_number
-  parent_folder                     = data.terraform_remote_state.bootstrap.outputs.common_config.parent_folder
-  org_id                            = data.terraform_remote_state.bootstrap.outputs.common_config.org_id
-  billing_account                   = data.terraform_remote_state.bootstrap.outputs.common_config.billing_account
-  default_region                    = data.terraform_remote_state.bootstrap.outputs.common_config.default_region
-  project_prefix                    = data.terraform_remote_state.bootstrap.outputs.common_config.project_prefix
-  folder_prefix                     = data.terraform_remote_state.bootstrap.outputs.common_config.folder_prefix
-  parent_id                         = data.terraform_remote_state.bootstrap.outputs.common_config.parent_id
-  bootstrap_folder_name             = data.terraform_remote_state.bootstrap.outputs.common_config.bootstrap_folder_name
-  common_folder_name                = data.terraform_remote_state.org.outputs.common_folder_name
-  development_folder_name           = data.terraform_remote_state.env_development.outputs.env_folder
-  non_production_folder_name        = data.terraform_remote_state.env_non_production.outputs.env_folder
-  production_folder_name            = data.terraform_remote_state.env_production.outputs.env_folder
-  base_net_hub_project_id           = data.terraform_remote_state.org.outputs.base_net_hub_project_id
-  restricted_net_hub_project_id     = data.terraform_remote_state.org.outputs.restricted_net_hub_project_id
-  restricted_net_hub_project_number = data.terraform_remote_state.org.outputs.restricted_net_hub_project_number
-  organization_service_account      = data.terraform_remote_state.bootstrap.outputs.organization_step_terraform_service_account_email
-  networks_service_account          = data.terraform_remote_state.bootstrap.outputs.networks_step_terraform_service_account_email
-  projects_service_account          = data.terraform_remote_state.bootstrap.outputs.projects_step_terraform_service_account_email
+  env                         = "common"
+  environment_code            = "c"
+  bgp_asn_number              = var.enable_partner_interconnect ? "16550" : "64882"
+  dns_bgp_asn_number          = var.enable_partner_interconnect ? "16550" : var.bgp_asn_dns
+  default_region1             = "us-east4"
+  # default_region2             = "" # JC Note: No second region.
+  # JC Note: Using 1 project for Transit VPC, DNS, and Interconnect. These values have been changed in the org output.
+  dns_hub_project_id          = data.terraform_remote_state.org.outputs.dns_hub_project_id
+  interconnect_project_id     = data.terraform_remote_state.org.outputs.interconnect_project_id
+  interconnect_project_number = data.terraform_remote_state.org.outputs.interconnect_project_number
+  parent_folder               = data.terraform_remote_state.bootstrap.outputs.common_config.parent_folder
+  org_id                      = data.terraform_remote_state.bootstrap.outputs.common_config.org_id
+  billing_account             = data.terraform_remote_state.bootstrap.outputs.common_config.billing_account
+  default_region              = data.terraform_remote_state.bootstrap.outputs.common_config.default_region
+  project_prefix              = data.terraform_remote_state.bootstrap.outputs.common_config.project_prefix
+  folder_prefix               = data.terraform_remote_state.bootstrap.outputs.common_config.folder_prefix
+  parent_id                   = data.terraform_remote_state.bootstrap.outputs.common_config.parent_id
+  bootstrap_folder_name       = data.terraform_remote_state.bootstrap.outputs.common_config.bootstrap_folder_name
+  common_folder_name          = data.terraform_remote_state.org.outputs.common_folder_name
+  # JC Note: Attempting with test environment only for now.
+  # development_folder_name           = data.terraform_remote_state.env_development.outputs.env_folder
+  # non_production_folder_name        = data.terraform_remote_state.env_non_production.outputs.env_folder
+  # production_folder_name            = data.terraform_remote_state.env_production.outputs.env_folder
+  base_net_hub_project_id = data.terraform_remote_state.org.outputs.base_net_hub_project_id
+  # JC Note: Not using a restricted network hub 
+  # restricted_net_hub_project_id     = data.terraform_remote_state.org.outputs.restricted_net_hub_project_id
+  # restricted_net_hub_project_number = data.terraform_remote_state.org.outputs.restricted_net_hub_project_number
+  # JC Note: Currently limiting to existing service accounts.
+  organization_service_account = data.terraform_remote_state.bootstrap.outputs.organization_step_terraform_service_account_email # data.terraform_remote_state.bootstrap.outputs.organization_step_terraform_service_account_email
+  networks_service_account     = data.terraform_remote_state.bootstrap.outputs.organization_step_terraform_service_account_email # data.terraform_remote_state.bootstrap.outputs.networks_step_terraform_service_account_email
+  projects_service_account     = data.terraform_remote_state.bootstrap.outputs.organization_step_terraform_service_account_email # data.terraform_remote_state.bootstrap.outputs.projects_step_terraform_service_account_email
 
   dedicated_interconnect_egress_policy = var.enable_dedicated_interconnect ? [
     {

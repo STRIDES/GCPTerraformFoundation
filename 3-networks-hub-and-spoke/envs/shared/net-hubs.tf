@@ -19,16 +19,16 @@ locals {
    * Base network ranges
    */
   base_subnet_primary_ranges = {
-    (local.default_region1) = "10.0.0.0/24"
-    (local.default_region2) = "10.1.0.0/24"
+    (local.default_region1) = "10.188.0.0/25"
+    # (local.default_region2) = "10.1.0.0/24"
   }
   /*
    * Restricted network ranges
    */
-  restricted_subnet_primary_ranges = {
-    (local.default_region1) = "10.8.0.0/24"
-    (local.default_region2) = "10.9.0.0/24"
-  }
+  # restricted_subnet_primary_ranges = {
+  #   (local.default_region1) = "10.8.0.0/24"
+  #   (local.default_region2) = "10.9.0.0/24"
+  # }
 
 
   supported_restricted_service = [
@@ -172,7 +172,7 @@ module "base_shared_vpc" {
   private_service_connect_ip    = "10.2.0.5"
   bgp_asn_subnet                = local.bgp_asn_number
   default_region1               = local.default_region1
-  default_region2               = local.default_region2
+  # default_region2               = local.default_region2
   domain                        = var.domain
   dns_enable_inbound_forwarding = var.base_hub_dns_enable_inbound_forwarding
   dns_enable_logging            = var.base_hub_dns_enable_logging
@@ -186,86 +186,103 @@ module "base_shared_vpc" {
 
   subnets = [
     {
-      subnet_name           = "sb-c-shared-base-hub-${local.default_region1}"
+      subnet_name           = "primary-transit-common"
       subnet_ip             = local.base_subnet_primary_ranges[local.default_region1]
       subnet_region         = local.default_region1
       subnet_private_access = "true"
       subnet_flow_logs      = var.subnetworks_enable_logging
-      description           = "Base network hub subnet for ${local.default_region1}"
+      description           = "Primary transit"
     },
     {
-      subnet_name           = "sb-c-shared-base-hub-${local.default_region2}"
-      subnet_ip             = local.base_subnet_primary_ranges[local.default_region2]
-      subnet_region         = local.default_region2
-      subnet_private_access = "true"
-      subnet_flow_logs      = var.subnetworks_enable_logging
-      description           = "Base network hub subnet for ${local.default_region2}"
-    }
-  ]
-  secondary_ranges = {}
-
-  depends_on = [module.dns_hub_vpc]
-}
-
-/******************************************
-  Restricted Network VPC
-*****************************************/
-
-module "restricted_shared_vpc" {
-  source = "../../modules/restricted_shared_vpc"
-
-  project_id                       = local.restricted_net_hub_project_id
-  project_number                   = local.restricted_net_hub_project_number
-  dns_hub_project_id               = local.dns_hub_project_id
-  environment_code                 = local.environment_code
-  private_service_connect_ip       = "10.10.0.5"
-  access_context_manager_policy_id = var.access_context_manager_policy_id
-  restricted_services              = local.restricted_services
-  members = distinct(concat([
-    "serviceAccount:${local.networks_service_account}",
-    "serviceAccount:${local.projects_service_account}",
-    "serviceAccount:${local.organization_service_account}",
-  ], var.perimeter_additional_members))
-  bgp_asn_subnet                = local.bgp_asn_number
-  default_region1               = local.default_region1
-  default_region2               = local.default_region2
-  domain                        = var.domain
-  dns_enable_inbound_forwarding = var.restricted_hub_dns_enable_inbound_forwarding
-  dns_enable_logging            = var.restricted_hub_dns_enable_logging
-  firewall_enable_logging       = var.restricted_hub_firewall_enable_logging
-  nat_enabled                   = var.restricted_hub_nat_enabled
-  nat_bgp_asn                   = var.restricted_hub_nat_bgp_asn
-  nat_num_addresses_region1     = var.restricted_hub_nat_num_addresses_region1
-  nat_num_addresses_region2     = var.restricted_hub_nat_num_addresses_region2
-  windows_activation_enabled    = var.restricted_hub_windows_activation_enabled
-  mode                          = "hub"
-
-  subnets = [
-    {
-      subnet_name           = "sb-c-shared-restricted-hub-${local.default_region1}"
-      subnet_ip             = local.restricted_subnet_primary_ranges[local.default_region1]
+      subnet_name           = "primary-transit-nw-tools"
+      subnet_ip             = "10.188.252.240/28"
       subnet_region         = local.default_region1
-      subnet_private_access = "true"
+      subnet_private_access = "false"
       subnet_flow_logs      = var.subnetworks_enable_logging
-      description           = "Restricted network hub subnet for ${local.default_region1}"
-    },
-    {
-      subnet_name           = "sb-c-shared-restricted-hub-${local.default_region2}"
-      subnet_ip             = local.restricted_subnet_primary_ranges[local.default_region2]
-      subnet_region         = local.default_region2
-      subnet_private_access = "true"
-      subnet_flow_logs      = var.subnetworks_enable_logging
-      description           = "Restricted network hub subnet for ${local.default_region2}"
+      description           = "Subnet used to host InfoBlox and other third-party/tools"
     }
+    # ,
+    # {
+    #   subnet_name           = "sb-c-shared-base-hub-${local.default_region2}"
+    #   subnet_ip             = local.base_subnet_primary_ranges[local.default_region2]
+    #   subnet_region         = local.default_region2
+    #   subnet_private_access = "true"
+    #   subnet_flow_logs      = var.subnetworks_enable_logging
+    #   description           = "Base network hub subnet for ${local.default_region2}"
+    # }
   ]
   secondary_ranges = {}
 
-  egress_policies = distinct(concat(
-    local.dedicated_interconnect_egress_policy,
-    var.egress_policies
-  ))
+  # Name Overwrites
+  vpc_name_overwrite = "nih-transit-vpc"
+  vpc_description = "Main NIH transit VPC"
+  region1_router1_name_overwrite = "nih-us-east4-router-a"
+  region1_router2_name_overwrite = "nih-us-east4-router-b"
 
-  ingress_policies = var.ingress_policies
-
-  depends_on = [module.dns_hub_vpc]
+  # JC Note: No separate DNS Hub VPC
+  # depends_on = [module.dns_hub_vpc]
 }
+
+# JC Note: No restricted network hub
+# /******************************************
+#   Restricted Network VPC
+# *****************************************/
+
+# module "restricted_shared_vpc" {
+#   source = "../../modules/restricted_shared_vpc"
+
+#   project_id                       = local.restricted_net_hub_project_id
+#   project_number                   = local.restricted_net_hub_project_number
+#   dns_hub_project_id               = local.dns_hub_project_id
+#   environment_code                 = local.environment_code
+#   private_service_connect_ip       = "10.10.0.5"
+#   access_context_manager_policy_id = var.access_context_manager_policy_id
+#   restricted_services              = local.restricted_services
+#   members = distinct(concat([
+#     "serviceAccount:${local.networks_service_account}",
+#     "serviceAccount:${local.projects_service_account}",
+#     "serviceAccount:${local.organization_service_account}",
+#   ], var.perimeter_additional_members))
+#   bgp_asn_subnet                = local.bgp_asn_number
+#   default_region1               = local.default_region1
+#   default_region2               = local.default_region2
+#   domain                        = var.domain
+#   dns_enable_inbound_forwarding = var.restricted_hub_dns_enable_inbound_forwarding
+#   dns_enable_logging            = var.restricted_hub_dns_enable_logging
+#   firewall_enable_logging       = var.restricted_hub_firewall_enable_logging
+#   nat_enabled                   = var.restricted_hub_nat_enabled
+#   nat_bgp_asn                   = var.restricted_hub_nat_bgp_asn
+#   nat_num_addresses_region1     = var.restricted_hub_nat_num_addresses_region1
+#   nat_num_addresses_region2     = var.restricted_hub_nat_num_addresses_region2
+#   windows_activation_enabled    = var.restricted_hub_windows_activation_enabled
+#   mode                          = "hub"
+
+#   subnets = [
+#     {
+#       subnet_name           = "sb-c-shared-restricted-hub-${local.default_region1}"
+#       subnet_ip             = local.restricted_subnet_primary_ranges[local.default_region1]
+#       subnet_region         = local.default_region1
+#       subnet_private_access = "true"
+#       subnet_flow_logs      = var.subnetworks_enable_logging
+#       description           = "Restricted network hub subnet for ${local.default_region1}"
+#     },
+#     {
+#       subnet_name           = "sb-c-shared-restricted-hub-${local.default_region2}"
+#       subnet_ip             = local.restricted_subnet_primary_ranges[local.default_region2]
+#       subnet_region         = local.default_region2
+#       subnet_private_access = "true"
+#       subnet_flow_logs      = var.subnetworks_enable_logging
+#       description           = "Restricted network hub subnet for ${local.default_region2}"
+#     }
+#   ]
+#   secondary_ranges = {}
+
+#   egress_policies = distinct(concat(
+#     local.dedicated_interconnect_egress_policy,
+#     var.egress_policies
+#   ))
+
+#   ingress_policies = var.ingress_policies
+
+#   depends_on = [module.dns_hub_vpc]
+# }

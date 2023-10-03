@@ -17,23 +17,35 @@
 # NIH Overwrite Variables
 
 variable "folder_name_overwrite" {
-  type = string
+  type    = string
   default = null
 }
 
-variable "skip_folder_tag_binding" {
-  type = bool
-  default = false
+variable "folder_tag_binding" {
+  type    = bool
+  default = true
 }
 
 variable "monitoring_project_overwrite" {
-  type = string
+  type    = string
   default = null
 }
 
+
 variable "base_shared_vpc_project_overwrite" {
-  type = string
-  default = null  
+  type    = string
+  default = null
+}
+
+variable "monitoring_project_id_overwrite" {
+  type    = string
+  default = null
+}
+
+
+variable "base_shared_vpc_project_id_overwrite" {
+  type    = string
+  default = null
 }
 
 # Env Module Variables

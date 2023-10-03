@@ -16,11 +16,12 @@
 
 locals {
   tags = {
-    environment = {
-      shortname   = "environment${local.key_suffix}"
-      description = "Environment identification"
-      values      = ["bootstrap", "production", "non-production", "development"]
-    }
+    # JC Note: Skipping Tag Folder Bindings
+    # environment = {
+    #   shortname   = "environment${local.key_suffix}"
+    #   description = "Environment identification"
+    #   values      = ["bootstrap", "production", "non-production", "development"]
+    # }
 
     # Create your own Tags based on the following template.
     # For more details follow https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing#creating
@@ -71,12 +72,14 @@ resource "google_tags_tag_value" "tag_values" {
 # The following code binds a tag to a resource.
 # For more details about binding tags to resources see: https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing#attaching
 # For more details about how to use terraform binding resource see: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/tags_tag_binding
-resource "google_tags_tag_binding" "common_folder" {
-  parent    = "//cloudresourcemanager.googleapis.com/${google_folder.folder_prod.id}"
-  tag_value = google_tags_tag_value.tag_values["environment_production"].id
-}
+# JC Note: Common_Folder is the Same as Bootstrap_Folder
+# resource "google_tags_tag_binding" "common_folder" {
+#   parent    = "//cloudresourcemanager.googleapis.com/${google_folder.folder_prod.id}"
+#   tag_value = google_tags_tag_value.tag_values["environment_production"].id
+# }
 
 resource "google_tags_tag_binding" "bootstrap_folder" {
+  count     = local.tags_obj_map != {} ? 1 : 0
   parent    = "//cloudresourcemanager.googleapis.com/${local.bootstrap_folder_name}"
   tag_value = google_tags_tag_value.tag_values["environment_bootstrap"].id
 }

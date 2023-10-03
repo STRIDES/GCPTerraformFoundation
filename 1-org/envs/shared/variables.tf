@@ -17,17 +17,17 @@
 # NIH Overwrite Variables
 
 variable "audit_project_overwrite" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "billing_project_overwrite" {
-  type = string
+  type    = string
   default = null
 }
 
-variable "interconnect_project_overwrite" {
-  type = string
+variable "base_network_project_overwrite" {
+  type    = string
   default = null
 }
 

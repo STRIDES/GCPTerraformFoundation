@@ -34,50 +34,62 @@ output "parent_resource_type" {
   description = "The parent resource type"
 }
 
-# output "common_folder_name" {
-#   value       = google_folder.folder_prod.name
-#   description = "The common folder name"
-# }
+# JC Note: We use the same folder for Bootstrap and Common Resources
+output "common_folder_name" {
+  value = data.terraform_remote_state.bootstrap.outputs.common_config.parent_folder
+  # value       = google_folder.folder_prod.name
+  description = "The common folder name"
+}
 
 output "org_audit_logs_project_id" {
   value       = module.org_audit_logs.project_id
   description = "The org audit logs project ID"
 }
 
-output "org_billing_logs_project_id" {
-  value       = module.org_billing_logs.project_id
-  description = "The org billing logs project ID"
-}
+# output "org_billing_logs_project_id" {
+#   value       = module.org_billing_logs.project_id
+#   description = "The org billing logs project ID"
+# }
 
 # output "org_secrets_project_id" {
 #   value       = module.org_secrets.project_id
 #   description = "The org secrets project ID"
 # }
 
+# JC Note: Interconnect is same project as base_net_hub project.
+
 output "interconnect_project_id" {
-  value       = module.interconnect.project_id
+  value       = try(module.base_network_hub[0].project_id, null) # module.interconnect.project_id
   description = "The Dedicated Interconnect project ID"
 }
 
 output "interconnect_project_number" {
-  value       = module.interconnect.project_number
+  value       = try(module.base_network_hub[0].project_number, null) # module.interconnect.project_number
   description = "The Dedicated Interconnect project number"
 }
 
+# JC Note: SCC Notification in the Audit Logs Project
 output "scc_notifications_project_id" {
-  value       = module.scc_notifications.project_id
+  # value       = module.scc_notifications.project_id
+  value       = module.org_audit_logs.project_id
   description = "The SCC notifications project ID"
 }
 
-# output "dns_hub_project_id" {
-#   value       = module.dns_hub.project_id
-#   description = "The DNS hub project ID"
-# }
+# JC Note: DNS Hub is same project as base_net_hub project.
+output "dns_hub_project_id" {
+  value       = try(module.base_network_hub[0].project_id, null) # module.dns_hub.project_id
+  description = "The DNS hub project ID"
+}
+# JC Note: Network Hub is same project as base_net_hub project.
+output "base_net_hub_project_id" {
+  value       = try(module.base_network_hub[0].project_id, null)
+  description = "The Base Network hub project ID"
+}
 
-# output "base_net_hub_project_id" {
-#   value       = try(module.base_network_hub[0].project_id, null)
-#   description = "The Base Network hub project ID"
-# }
+output "base_net_hub_project_number" {
+  value       = try(module.base_network_hub[0].project_number, null)
+  description = "The Base Network hub project number"
+}
 
 # output "restricted_net_hub_project_id" {
 #   value       = try(module.restricted_network_hub[0].project_id, null)

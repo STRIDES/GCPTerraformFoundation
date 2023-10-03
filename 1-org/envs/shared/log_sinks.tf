@@ -79,7 +79,6 @@ module "logs_export" {
   }
 
   # JC Note: Logs not being shipped to Logbucket currently
-
   # /******************************************
   #   Send logs to Logbucket
   # *****************************************/
@@ -95,9 +94,10 @@ module "logs_export" {
   Billing logs (Export configured manually)
 *****************************************/
 
-resource "google_bigquery_dataset" "billing_dataset" {
-  dataset_id    = "billing_data"
-  project       = module.org_billing_logs.project_id
-  friendly_name = "GCP Billing Data"
-  location      = var.billing_export_dataset_location
-}
+# JC Note: No org wide billing export.
+# resource "google_bigquery_dataset" "billing_dataset" {
+#   dataset_id    = "billing_data"
+#   project       = module.org_billing_logs.project_id
+#   friendly_name = "GCP Billing Data"
+#   location      = var.billing_export_dataset_location
+# }

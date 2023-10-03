@@ -49,8 +49,8 @@ module "seed_bootstrap" {
 
   org_id                         = var.org_id
   folder_id                      = google_folder.bootstrap.id
-  project_id                     = var.seed_project_id_overwrite != null? var.seed_project_id_overwrite : "${var.project_prefix}-b-seed"
-  state_bucket_name              = var.seed_state_bucket_overwrite != null? var.seed_state_bucket_overwrite : "${var.bucket_prefix}-${var.project_prefix}-b-seed-tfstate"
+  project_id                     = var.seed_project_id_overwrite != null ? var.seed_project_id_overwrite : "${var.project_prefix}-b-seed"
+  state_bucket_name              = var.seed_state_bucket_overwrite != null ? var.seed_state_bucket_overwrite : "${var.bucket_prefix}-${var.project_prefix}-b-seed-tfstate"
   force_destroy                  = var.bucket_force_destroy
   billing_account                = var.billing_account
   group_org_admins               = local.group_org_admins

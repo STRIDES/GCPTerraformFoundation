@@ -62,6 +62,7 @@ output "common_config" {
     folder_prefix         = var.folder_prefix
     parent_id             = local.parent
     bootstrap_folder_name = google_folder.bootstrap.name
+    bootstrap_folder_id   = google_folder.bootstrap.id
   }
 }
 

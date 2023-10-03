@@ -80,17 +80,18 @@ resource "google_project_iam_member" "audit_log_bq_data_viewer" {
   Billing BigQuery - IAM
 *****************************************/
 
-resource "google_project_iam_member" "billing_bq_user" {
-  project = module.org_billing_logs.project_id
-  role    = "roles/bigquery.user"
-  member  = "group:${var.billing_data_users}"
-}
+# JC Note: No org wide Billing Export
+# resource "google_project_iam_member" "billing_bq_user" {
+#   project = module.org_billing_logs.project_id
+#   role    = "roles/bigquery.user"
+#   member  = "group:${var.billing_data_users}"
+# }
 
-resource "google_project_iam_member" "billing_bq_viewer" {
-  project = module.org_billing_logs.project_id
-  role    = "roles/bigquery.dataViewer"
-  member  = "group:${var.billing_data_users}"
-}
+# resource "google_project_iam_member" "billing_bq_viewer" {
+#   project = module.org_billing_logs.project_id
+#   role    = "roles/bigquery.dataViewer"
+#   member  = "group:${var.billing_data_users}"
+# }
 
 /******************************************
   Billing Cloud Console - IAM
@@ -169,15 +170,16 @@ resource "google_project_iam_member" "audit_bq_data_viewer" {
   member  = "group:${var.gcp_groups.audit_viewer}"
 }
 
+# JC Note: SCC Notfication located in audit_logs projects
 resource "google_project_iam_member" "scc_admin" {
-  count   = var.gcp_groups.scc_admin != null ? 1 : 0
-  project = module.scc_notifications.project_id
+  count = var.gcp_groups.scc_admin != null ? 1 : 0
+  # project = module.scc_notifications.project_id
+  project = module.org_audit_logs.project_id
   role    = "roles/securitycenter.adminEditor"
   member  = "group:${var.gcp_groups.scc_admin}"
 }
 
-# JC Note: Not using centralized secrets project currently.
-
+# JC Note: Not using centralized secrets project.
 # resource "google_project_iam_member" "global_secrets_admin" {
 #   count   = var.gcp_groups.global_secrets_admin != null ? 1 : 0
 #   project = module.org_secrets.project_id

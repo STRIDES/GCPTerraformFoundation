@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-provider "google-beta" {
-  user_project_override = true
-  billing_project       = var.groups.billing_project
-}
+# JC Note: Terragrunt defines providers.
+# provider "google-beta" {
+#   user_project_override = true
+#   billing_project       = var.groups.billing_project
+# }

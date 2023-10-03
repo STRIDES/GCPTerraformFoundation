@@ -14,6 +14,34 @@
  * limitations under the License.
  */
 
+# Overwrite Variables
+
+variable "vpc_description" {
+  type = string
+  description = "Description to overwrite the VPC description."
+  default = null
+}
+
+variable "vpc_name_overwrite" {
+  type = string
+  description = "Name to overwrite the VPC name."
+  default = null
+}
+
+variable "region1_router1_name_overwrite" {
+  type = string
+  description = "Name to overwrite the first Cloud Router in region 1."
+  default = null
+}
+
+variable "region1_router2_name_overwrite" {
+  type = string
+  description = "Name to overwrite the second Cloud Router in region 1."
+  default = null
+}
+
+# Base Shared VPC Variables
+
 variable "project_id" {
   type        = string
   description = "Project ID for Private Shared VPC."
@@ -49,6 +77,7 @@ variable "default_region1" {
 variable "default_region2" {
   type        = string
   description = "Default region 2 for subnets and Cloud Routers"
+  default = null
 }
 
 variable "nat_enabled" {

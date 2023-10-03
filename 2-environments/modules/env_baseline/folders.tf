@@ -34,7 +34,7 @@ resource "time_sleep" "wait_60_seconds" {
 # For more details on how to use terraform binding resource see: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/tags_tag_binding
 
 resource "google_tags_tag_binding" "folder_env" {
-  count = var.skip_folder_tag_binding ? 0 : 1
+  count     = var.folder_tag_binding ? 1 : 0
   parent    = "//cloudresourcemanager.googleapis.com/${google_folder.env.id}"
   tag_value = local.tags["environment_${var.env}"]
 

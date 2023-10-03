@@ -70,6 +70,7 @@ module "interconnect_attachment2_region1" {
 module "interconnect_attachment1_region2" {
   source  = "terraform-google-modules/cloud-router/google//modules/interconnect_attachment"
   version = "~> 4.0"
+  count = var.region2 != null ? 1 : 0
 
   name    = "vl-${var.region2_interconnect1_onprem_dc}-${var.region2_interconnect1_location}-${var.vpc_name}-${var.region2}-${local.suffix3}"
   project = var.interconnect_project_id
@@ -93,6 +94,7 @@ module "interconnect_attachment1_region2" {
 module "interconnect_attachment2_region2" {
   source  = "terraform-google-modules/cloud-router/google//modules/interconnect_attachment"
   version = "~> 4.0"
+  count = var.region2 != null ? 1 : 0
 
   name    = "vl-${var.region2_interconnect2_onprem_dc}-${var.region2_interconnect2_location}-${var.vpc_name}-${var.region2}-${local.suffix4}"
   project = var.interconnect_project_id

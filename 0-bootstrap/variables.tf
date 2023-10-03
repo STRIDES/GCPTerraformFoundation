@@ -16,17 +16,17 @@
 
 # NIH Overwrite Variables
 variable "seed_project_id_overwrite" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "seed_state_bucket_overwrite" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "bootstrap_folder_overwrite" {
-  type = string
+  type    = string
   default = null
 }
 

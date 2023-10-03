@@ -22,8 +22,9 @@ module "monitoring_project" {
   source  = "terraform-google-modules/project-factory/google"
   version = "~> 14.0"
 
-  random_project_id           = true
-  random_project_id_length    = 4
+  project_id                  = var.monitoring_project_id_overwrite != null ? var.monitoring_project_id_overwrite : ""
+  random_project_id           = var.monitoring_project_id_overwrite != null ? false : true
+  random_project_id_length    = var.monitoring_project_id_overwrite != null ? null : 4
   name                        = var.monitoring_project_overwrite != null ? var.monitoring_project_overwrite : "${local.project_prefix}-${var.environment_code}-monitoring"
   org_id                      = local.org_id
   billing_account             = local.billing_account
@@ -37,13 +38,13 @@ module "monitoring_project" {
   ]
 
   labels = {
-    environment       = var.env
-    application_name  = "env-monitoring"
+    environment      = var.env
+    application_name = "env-monitoring"
     # billing_code      = "1234"
     # primary_contact   = "example1"
     # secondary_contact = "example2"
     # business_code     = "abcd"
-    env_code          = var.environment_code
+    env_code = var.environment_code
   }
   budget_alert_pubsub_topic   = var.project_budget.monitoring_alert_pubsub_topic
   budget_alert_spent_percents = var.project_budget.monitoring_alert_spent_percents

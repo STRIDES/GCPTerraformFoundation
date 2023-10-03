@@ -17,16 +17,18 @@
 /******************************************
   SCC Notification
 *****************************************/
-
+# JC Note: SCC Notifications in the audit logs project.
 resource "google_pubsub_topic" "scc_notification_topic" {
-  name    = "top-scc-notification"
-  project = module.scc_notifications.project_id
+  name = "top-scc-notification"
+  # project = module.scc_notifications.project_id
+  project = module.org_audit_logs.project_id
 }
 
 resource "google_pubsub_subscription" "scc_notification_subscription" {
-  name    = "sub-scc-notification"
-  topic   = google_pubsub_topic.scc_notification_topic.name
-  project = module.scc_notifications.project_id
+  name  = "sub-scc-notification"
+  topic = google_pubsub_topic.scc_notification_topic.name
+  # project = module.scc_notifications.project_id
+  project = module.org_audit_logs.project_id
 }
 
 resource "google_scc_notification_config" "scc_notification_config" {

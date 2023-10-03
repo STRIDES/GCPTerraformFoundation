@@ -16,8 +16,8 @@
 
 locals {
   mode                    = var.mode == "hub" ? "-hub" : "-spoke"
-  vpc_name                = "${var.environment_code}-shared-base${local.mode}"
-  network_name            = "vpc-${local.vpc_name}"
+  vpc_name                = var.vpc_name_overwrite == null ? "${var.environment_code}-shared-base${local.mode}" : var.vpc_name_overwrite
+  network_name            = var.vpc_name_overwrite == null ? "vpc-${local.vpc_name}" : var.vpc_name_overwrite
   private_googleapis_cidr = module.private_service_connect.private_service_connect_ip
 }
 
@@ -31,11 +31,14 @@ module "main" {
 
   project_id                             = var.project_id
   network_name                           = local.network_name
-  shared_vpc_host                        = "true"
-  delete_default_internet_gateway_routes = "true"
+  description = var.vpc_description
+  shared_vpc_host                        = "false" # JC Note: We do not use our hub as a shared VPC. All hub resources are in the same project.
+  delete_default_internet_gateway_routes = "false" # "true" # JC Note: This is an existing VPC with this already set.
 
   subnets          = var.subnets
   secondary_ranges = var.secondary_ranges
+
+  mtu = 1460
 
   routes = concat(
     var.nat_enabled ?
@@ -119,9 +122,9 @@ module "region1_router1" {
   version = "~> 4.0"
   count   = var.mode != "spoke" ? 1 : 0
 
-  name    = "cr-${local.vpc_name}-${var.default_region1}-cr1"
+  name    = var.region1_router1_name_overwrite != null ? var.region1_router1_name_overwrite : "cr-${local.vpc_name}-${var.default_region1}-cr1"
   project = var.project_id
-  network = module.main.network_name
+  network = module.main.network_self_link # module.main.network_name
   region  = var.default_region1
   bgp = {
     asn                  = var.bgp_asn_subnet
@@ -135,9 +138,9 @@ module "region1_router2" {
   version = "~> 4.0"
   count   = var.mode != "spoke" ? 1 : 0
 
-  name    = "cr-${local.vpc_name}-${var.default_region1}-cr2"
+  name    = var.region1_router2_name_overwrite != null ? var.region1_router2_name_overwrite : "cr-${local.vpc_name}-${var.default_region1}-cr2"
   project = var.project_id
-  network = module.main.network_name
+  network = module.main.network_self_link # module.main.network_name
   region  = var.default_region1
   bgp = {
     asn                  = var.bgp_asn_subnet
@@ -149,7 +152,7 @@ module "region1_router2" {
 module "region2_router1" {
   source  = "terraform-google-modules/cloud-router/google"
   version = "~> 4.0"
-  count   = var.mode != "spoke" ? 1 : 0
+  count   = var.mode != "spoke" && var.default_region2 != null ? 1 : 0
 
   name    = "cr-${local.vpc_name}-${var.default_region2}-cr3"
   project = var.project_id
@@ -165,7 +168,7 @@ module "region2_router1" {
 module "region2_router2" {
   source  = "terraform-google-modules/cloud-router/google"
   version = "~> 4.0"
-  count   = var.mode != "spoke" ? 1 : 0
+  count   = var.mode != "spoke" && var.default_region2 != null ? 1 : 0
 
   name    = "cr-${local.vpc_name}-${var.default_region2}-cr4"
   project = var.project_id
